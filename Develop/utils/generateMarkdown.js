@@ -41,6 +41,18 @@ function generateContent(content, title){
   }
 }
 
+function generateScreenshots (content){
+  let images = '';
+  if(content.screenshots[0].confirmScreenshot){
+    content.screenshots.forEach(element => {
+      if(element.confirmScreenshot){
+      images += `![](assets/images/${element.screenshot})
+`;  }
+    });
+    return images;
+  }else {return '';}
+}
+
 function generateTpaList(data){
 let tpas = '';
 if(data.tpa[0].confirmTpa){
@@ -92,12 +104,13 @@ ${tutorials}
 }
 
 function generateCredits(data){
+  if(data.tpa[0].confirmTpa || data.tutorials[0].tutorials || data.colaborators[0].confirmColaborators){
   return`# Credits
 
 ${generateColaboratorsList(data)}
 ${generateTpaList(data)}
 ${generateTutorialList(data)}`
-  
+  }else{return '';} 
 }
 
 function generateLanguageBadges (data){
@@ -200,6 +213,7 @@ ${data.description}
 ${generateTableOfContents(data)}
 ${generateContent(data.installation, '# Installation')}
 ${generateContent(data.usage, '# Usage')}
+${generateScreenshots(data)}
 ${generateCredits(data.credits)}
 ${renderLicenseSection(data.license[0])}
 `

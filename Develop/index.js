@@ -102,6 +102,44 @@ const questions = () => {
     ]);
 };
 
+const screenshots = readmeData => {
+    if(!readmeData.screenshots){
+        readmeData.screenshots = [];
+    }
+    return inquirer.prompt([
+        {
+            type: 'confirm',
+            name: 'confirmScreenshot',
+            message: 'Would you like to add a screenshot?',
+            default: 'false'
+        },
+        {
+            type: 'input',
+            name: 'screenshot',
+            message: 'Paste here the name of your screenshot file.',
+            validate: screenshotInput => {
+                if(screenshotInput){
+                    return true;
+                }else{
+                    console.log('You have to enter your screenshot file');
+                    return false;
+                }
+            },
+            when: ({confirmScreenshot}) => confirmScreenshot
+        }
+    ])
+    .then (screenshot => {
+        console.log('Do not forget to copy your screenshot in the directory "images" inside of the directory "assets".');
+        readmeData.screenshots.push(screenshot);
+        if(screenshot.confirmScreenshot){
+            return screenshots(readmeData);
+        }else{
+            return readmeData;
+        }
+
+    });
+};
+
 const colaborators = readmeData => {
     if(!readmeData.credits) {
         readmeData.credits = {};
@@ -192,12 +230,15 @@ const thirdPartAssets = (readmeData, currentTpa) => {
         }
      ]) 
     .then (tpaData => {
+        let newTpa = new tpa (tpaData.tpa,tpaData.confirmTpa);
+        if(!currentTpa){
+        readmeData.credits.tpa.push(newTpa);  
+        } 
         if(currentTpa){
-        readmeData.credits.tpa.push(currentTpa);  
-        }    
+        readmeData.credits.tpa.push(currentTpa); 
+        }   
         if(tpaData.confirmTpa){
-            let newTpa = new tpa (tpaData.tpa,tpaData.confirmTpa);
-            
+                  
             if(tpaData.tpaCreator && tpaData.confirmTpa){
                return thirdPartCreators(readmeData, newTpa);
             }else{
@@ -359,6 +400,7 @@ function writeToFile(fileName, data) {
 // TODO: Create a function to initialize app
 function init() {
     questions()
+    .then(screenshots)
     .then(colaborators)
     .then(thirdPartAssets)
     .then(tutorials)
