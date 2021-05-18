@@ -129,7 +129,7 @@ const screenshots = readmeData => {
         }
     ])
     .then (screenshot => {
-        console.log('Do not forget to copy your screenshot in the directory "images" inside of the directory "assets".');
+       // console.log('Do not forget to copy your screenshot in the directory "images" inside of the directory "assets".');
         readmeData.screenshots.push(screenshot);
         if(screenshot.confirmScreenshot){
             return screenshots(readmeData);
@@ -291,7 +291,6 @@ const creators = [];
        
     ])
         .then (creatorData => {
-            console.log(creatorData);
             const newCreator = new creator(creatorData.creator, creatorData.creatorLink, creatorData.confirmAnother);
             tpa.adding(newCreator);
                 if(creatorData.confirmAnother){
@@ -406,7 +405,6 @@ function init() {
     .then(tutorials)
     .then(license)
     .then(readmeData => {
-        console.log(util.inspect(readmeData, false, null, true));  
         const readmeMD = generateMarkdown(readmeData);
         writeToFile('README.md', readmeMD);       
     });

@@ -61,7 +61,8 @@ if(data.tpa[0].confirmTpa){
 * Creators
 `; 
   element.creators.forEach(element => {
-    tpas += `  * [${element.name}](${element.link})`;
+    tpas += `  * [${element.name}](${element.link})
+`;
   
 });
   });
