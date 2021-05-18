@@ -25,30 +25,16 @@ This is an app that gets information from the users input and generates a qualit
 
 # Credits
 
-## Colaborator(s)
-  
-* [colaborator 1](colaborator.github)* [colaborator 2](colaborator2,github)
 
-## Third Part Asset(s)
-  
-### TPA1
-* Creators
-  * [Creator1](creator1.com)
-  * [creator2](creator2.com)
-### TPA1
-* Creators
-  * [Creator1](creator1.com)
-  * [creator2](creator2.com)
-### TPA2
-* Creators
-  * [Creator1](creator1.com)
-  * [Creator2](creator2.com)
 
+## Tutorial(s)
+  
+* [https://drive.google.com/file/d/13IJ-lZdfutvFyOvnJOreFqFXV2qMiE1t/view](https://drive.google.com/file/d/13IJ-lZdfutvFyOvnJOreFqFXV2qMiE1t/view)
 
 
 # License
-  ![](https://img.shields.io/badge/license-Apache--2.0-blue)
+  ![](https://img.shields.io/badge/license-GPL--2.0-blue)
 
   Copyright (c) 2021 Virginia Rabello.
-  Licensed under the [Apache-2.0](https://opensource.org/licenses/Apache-2.0) license.
+  Licensed under the [GPL-2.0](https://opensource.org/licenses/GPL-2.0) license.
   
