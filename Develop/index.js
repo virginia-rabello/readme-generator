@@ -1,6 +1,22 @@
 const fs = require('fs');
 const util = require('util');
 const inquirer = require('inquirer');
+const generateMarkdown = require('./utils/generateMarkdown');
+
+function creator(name, link, confirm) {
+    this.name = name,
+    this.link = link,
+    this.confirmAnother = confirm
+}
+
+function tpa(name,confirm) {
+    this.name = name,
+    this.confirmTpa = confirm,
+    this.creators = [],
+    this.adding = function(creator){
+        this.creators.push(creator);
+    }
+}
 // TODO: Create an array of questions for user input
 //const questions = [];
 
@@ -36,6 +52,12 @@ const questions = () => {
                  return false;
              }
          }   
+        },
+        {
+            type: 'checkbox',
+            name: 'languageBadges',
+            message: 'Which languages does your project have?',
+            choices: ['HTML', 'Javascript', 'CSS', 'Node', 'Java'],
         },
         {
             type: 'confirm',
@@ -135,7 +157,7 @@ const colaborators = readmeData => {
     });
 };
 
-const thirdPartAssets = readmeData => {
+const thirdPartAssets = (readmeData, currentTpa) => {
     if(!readmeData.credits.tpa) {
         readmeData.credits.tpa = [];
         }
@@ -166,15 +188,20 @@ const thirdPartAssets = readmeData => {
             message: 'Would you like to add a creator for this asset.',
             default: false,
             when: ({confirmTpa}) => confirmTpa
+           
         }
      ]) 
     .then (tpaData => {
-        readmeData.credits.tpa.push(tpaData);
+        if(currentTpa){
+        readmeData.credits.tpa.push(currentTpa);  
+        }    
         if(tpaData.confirmTpa){
+            let newTpa = new tpa (tpaData.tpa,tpaData.confirmTpa);
+            
             if(tpaData.tpaCreator && tpaData.confirmTpa){
-               return thirdPartCreators(readmeData);
+               return thirdPartCreators(readmeData, newTpa);
             }else{
-            return thirdPartAssets(readmeData);
+            return thirdPartAssets(readmeData, currentTpa);
             }
         }
        
@@ -184,8 +211,8 @@ const thirdPartAssets = readmeData => {
     });
 };
 
-const thirdPartCreators = (readmeData) => {
-
+const thirdPartCreators = (readmeData, tpa) => {
+const creators = [];
      return inquirer.prompt([
             
         {
@@ -223,11 +250,13 @@ const thirdPartCreators = (readmeData) => {
        
     ])
         .then (creatorData => {
-            readmeData.credits.tpa.push(creatorData);
-            if(creatorData.confirmAnother){
-                return thirdPartCreators(readmeData);
+            console.log(creatorData);
+            const newCreator = new creator(creatorData.creator, creatorData.creatorLink, creatorData.confirmAnother);
+            tpa.adding(newCreator);
+                if(creatorData.confirmAnother){
+                return thirdPartCreators(readmeData, tpa);
             }else{
-                return thirdPartAssets(readmeData);
+                return thirdPartAssets(readmeData, tpa);
             }
         
         });
@@ -282,14 +311,29 @@ const thirdPartCreators = (readmeData) => {
             default: false
         },
         {
-            type: 'input',
-            name: 'link',
-            message: 'Enter the link of the license.',
-            validate: linkInput => {
-                if(linkInput){
+            type: 'list',
+            name: 'licenseChoice',
+            message: 'Chose here your license.',
+            choices: ['MIT', 'GPL-2.0', 'Apache-2.0', 'GPL-3.0', 'BSD-2-Clause', 'ISC'],
+            when: ({license}) => license,
+            validate: licenseChoice => {
+                if(licenseChoice){
                      return true;
                 }else{
-                    console.log('You have to enter the link for the license.');
+                    console.log('You have to chose a license.');
+                    return false;
+                }
+            },
+        },
+        {
+            type: 'input',
+            name: 'owner',
+            message: 'Enter your full name.',
+            validate: owner => {
+                if(owner){
+                     return true;
+                }else{
+                    console.log('You have to enter your name.');
                     return false;
                 }
             },
@@ -303,24 +347,30 @@ const thirdPartCreators = (readmeData) => {
 
  };
 
-questions()
-.then(colaborators)
-.then(thirdPartAssets)
-.then(tutorials)
-.then(license)
-.then(readmeData => {
-    
-    console.log(util.inspect(readmeData, false, null, true));
-});
-
-
 // TODO: Create a function to write README file
-//function writeToFile(fileName, data) {}
+function writeToFile(fileName, data) {
+    fs.writeFile(fileName, data, err => {
+        if (err) throw new Error (err);
+
+        console.log('README.md file generated with success!');
+    });
+};
 
 // TODO: Create a function to initialize app
-//function init() {}
+function init() {
+    questions()
+    .then(colaborators)
+    .then(thirdPartAssets)
+    .then(tutorials)
+    .then(license)
+    .then(readmeData => {
+        console.log(util.inspect(readmeData, false, null, true));  
+        const readmeMD = generateMarkdown(readmeData);
+        writeToFile('README.md', readmeMD);       
+    });
+}
 
 // Function call to initialize app
-//init();
+init();
 
 
